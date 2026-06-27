@@ -2,6 +2,7 @@ package belajar_goroutine
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -92,4 +93,23 @@ func TestBufferedChannel(t *testing.T) {
 
 	fmt.Println("selesai")
 	time.Sleep(1 * time.Second)
+}
+
+// range channel
+func TestRangeChannel(t *testing.T) {
+	channel := make(chan string)
+
+	go func() {
+		defer close(channel) // agar tidak deadlock close message
+		for i := range 10 {
+			data := "data no. " + strconv.Itoa(i)
+			channel <- data
+		}
+	}()
+
+	for data := range channel {
+		fmt.Println("menerima ", data)
+	}
+
+	fmt.Println("selesai")
 }
