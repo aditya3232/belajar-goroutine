@@ -19,6 +19,6 @@ func TestRaceCondition(t *testing.T) {
 		}()
 	}
 
-	fmt.Println("counter: ", x)
 	time.Sleep(5 * time.Second)
+	fmt.Println("counter: ", x)
 }
