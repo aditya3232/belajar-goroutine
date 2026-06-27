@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// membaut channel
 func TestCreateChannel(t *testing.T) {
 	channel := make(chan string)
 	defer close(channel) // pastikan channel ditutup setelah digunakan
@@ -27,4 +28,23 @@ func TestCreateChannel(t *testing.T) {
 
 	time.Sleep(2 * time.Second)
 
+}
+
+// channel sebagai parameter
+// parameter channel chan string, otmatis pass by reference (channel aslinya)
+func GiveMeResponse(channel chan string) {
+	time.Sleep(2 * time.Second)
+	channel <- "data no. 1" // kirim data kedalam channel
+}
+
+func TestChannelAsParameter(t *testing.T) {
+	channel := make(chan string)
+	defer close(channel)
+
+	go GiveMeResponse(channel) // goroutine aka kirim channel ke sini
+
+	data := <-channel // tinggal listen data channel
+	fmt.Println("result data from channel: ", data)
+
+	time.Sleep(2 * time.Second)
 }
