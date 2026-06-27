@@ -35,7 +35,7 @@ func TestCreateChannel(t *testing.T) {
 // parameter channel chan string, otmatis pass by reference (channel aslinya)
 func GiveMeResponse(channel chan string) {
 	time.Sleep(2 * time.Second)
-	channel <- "data no. 1" // kirim data kedalam channel
+	channel <- "hello world" // kirim data kedalam channel
 }
 
 func TestChannelAsParameter(t *testing.T) {
@@ -186,5 +186,33 @@ func TestSelectRandom(t *testing.T) {
 		fmt.Println(data)
 	case data := <-channel2:
 		fmt.Println(data)
+	}
+}
+
+// default select
+// perlu dibuat agar kalau ada channel yg tidak ada datanya, dia tidak deadlock
+func TestDefaultSelect(t *testing.T) {
+	channel1 := make(chan string)
+	channel2 := make(chan string)
+
+	go GiveMeResponse(channel1)
+	go GiveMeResponse(channel2)
+
+	counter := 0
+	for {
+		select {
+		case data := <-channel1:
+			fmt.Println("data dari channel 1: ", data)
+			counter++
+		case data := <-channel2:
+			fmt.Println("data dari channel 2: ", data)
+			counter++
+		default:
+			fmt.Println("menunggu data")
+		}
+
+		if counter == 2 {
+			break
+		}
 	}
 }
