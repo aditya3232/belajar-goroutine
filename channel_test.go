@@ -69,3 +69,27 @@ func TestInOutChannel(t *testing.T) {
 
 	time.Sleep(2 * time.Second)
 }
+
+// buffered channel
+// cocok digunakan ketika pengirim lebih cepat daripada penerima
+// dia adalah kapasitas antrian dalam buffer
+// dengan adanya buffer, data yang dimasukkan akan ditampung di antrian,
+// sehigga tidak deadlock, kalau belum ada penerima,
+// tapi kalau buffer nya full, dan tidak ada yg ambil, ya bakalan deadlock juga kalau ada data baru
+func TestBufferedChannel(t *testing.T) {
+	channel := make(chan string, 2)
+	defer close(channel)
+
+	go func() {
+		channel <- "adit"
+		channel <- "ichsan"
+	}()
+
+	go func() {
+		fmt.Println(<-channel)
+		fmt.Println(<-channel)
+	}()
+
+	fmt.Println("selesai")
+	time.Sleep(1 * time.Second)
+}
