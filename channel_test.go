@@ -113,3 +113,78 @@ func TestRangeChannel(t *testing.T) {
 
 	fmt.Println("selesai")
 }
+
+// select channel
+// digunakan ketika ingin menerima data dari beberapa channel
+// urutan output mengikuti channel mana yang lebih dulu mengirim data
+func TestSelectChannelLoop(t *testing.T) {
+	channel1 := make(chan string)
+	channel2 := make(chan string)
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		channel1 <- "data dari channel 1"
+	}()
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		channel2 <- "data dari channel 2"
+	}()
+
+	// perulangan harus sesuai, kalau kelebihan bisa deadlock
+	for i := 0; i < 2; i++ {
+		select {
+		case data := <-channel1:
+			fmt.Println(data)
+		case data := <-channel2:
+			fmt.Println(data)
+		}
+	}
+}
+
+// select channel
+// select disini akan memilih channel mana yg paling cepat, yg lain tidak di print
+func TestSelectChannel(t *testing.T) {
+	channel1 := make(chan string)
+	channel2 := make(chan string)
+
+	go func() {
+		time.Sleep(2 * time.Second)
+		channel1 <- "Data dari Channel 1"
+	}()
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		channel2 <- "Data dari Channel 2"
+	}()
+
+	select {
+	case data := <-channel1:
+		fmt.Println(data)
+	case data := <-channel2:
+		fmt.Println(data)
+	}
+}
+
+// select channel
+// runtime go akan memilih salah satu channel yang siap secara acak,
+// karena kedua channel siap pada waktu yang sama
+func TestSelectRandom(t *testing.T) {
+	channel1 := make(chan string)
+	channel2 := make(chan string)
+
+	go func() {
+		channel1 <- "Channel 1"
+	}()
+
+	go func() {
+		channel2 <- "Channel 2"
+	}()
+
+	select {
+	case data := <-channel1:
+		fmt.Println(data)
+	case data := <-channel2:
+		fmt.Println(data)
+	}
+}
